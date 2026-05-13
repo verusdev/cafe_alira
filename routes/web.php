@@ -6,9 +6,13 @@ use App\Http\Controllers\DishController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\RefrigeratorController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::post('/', [LandingController::class, 'store'])->name('landing.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'loginForm'])->name('login');
@@ -18,7 +22,7 @@ Route::middleware('guest')->group(function () {
 Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('events', EventController::class);
     Route::get('events/{event}/shopping-list', [EventController::class, 'shoppingList'])->name('events.shopping-list');
