@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Закупка от {{ $purchase->purchase_date->format('d.m.Y') }}</h1>
         <div>
-            @if($purchase->status == 'pending')
+            @if(auth()->user()->canWrite('purchases') && $purchase->status == 'pending')
                 <a href="{{ route('purchases.edit', $purchase) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Редактировать</a>
                 <form action="{{ route('purchases.complete', $purchase) }}" method="POST" class="inline">
                     @csrf

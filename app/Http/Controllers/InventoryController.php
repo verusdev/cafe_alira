@@ -21,6 +21,7 @@ class InventoryController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->canWrite('inventory'), 403);
         $refrigerators = Refrigerator::all();
         $ingredients = Ingredient::where('category', 'frozen')->get();
         return view('inventory.form', compact('refrigerators', 'ingredients'));
@@ -28,6 +29,7 @@ class InventoryController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('inventory'), 403);
         $validated = $request->validate([
             'refrigerator_id' => 'required|exists:refrigerators,id',
             'ingredient_id' => 'required|exists:ingredients,id',
@@ -48,6 +50,7 @@ class InventoryController extends Controller
 
     public function edit(Inventory $inventory): View
     {
+        abort_unless(auth()->user()->canWrite('inventory'), 403);
         $refrigerators = Refrigerator::all();
         $ingredients = Ingredient::where('category', 'frozen')->get();
         return view('inventory.form', compact('inventory', 'refrigerators', 'ingredients'));
@@ -55,6 +58,7 @@ class InventoryController extends Controller
 
     public function update(Request $request, Inventory $inventory): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('inventory'), 403);
         $validated = $request->validate([
             'refrigerator_id' => 'required|exists:refrigerators,id',
             'ingredient_id' => 'required|exists:ingredients,id',
@@ -69,6 +73,7 @@ class InventoryController extends Controller
 
     public function destroy(Inventory $inventory): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('inventory'), 403);
         $inventory->delete();
         return redirect()->route('inventory.index')->with('success', 'Запас удален');
     }

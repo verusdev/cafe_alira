@@ -5,7 +5,9 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Мероприятия</h1>
-        <a href="{{ route('events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
+        @if (auth()->user()->canWrite('events'))
+            <a href="{{ route('events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -30,12 +32,14 @@
                         <td class="px-4 py-3">{{ $event->status }}</td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('events.show', $event) }}" class="text-blue-500 hover:text-blue-700 mr-2">👁</a>
-                            <a href="{{ route('events.edit', $event) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
+                            @if (auth()->user()->canWrite('events'))
+                                <a href="{{ route('events.edit', $event) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
+                                <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                </form>
+                            @endif
                             <a href="{{ route('events.shopping-list', $event) }}" class="text-green-500 hover:text-green-700 mr-2">🛒</a>
-                            <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
-                            </form>
                         </td>
                     </tr>
                 @endforeach

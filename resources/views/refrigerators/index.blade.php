@@ -5,7 +5,9 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Холодильники</h1>
-        <a href="{{ route('refrigerators.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Добавить</a>
+        @if (auth()->user()->canWrite('refrigerators'))
+            <a href="{{ route('refrigerators.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Добавить</a>
+        @endif
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

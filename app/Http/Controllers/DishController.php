@@ -18,12 +18,14 @@ class DishController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->canWrite('dishes'), 403);
         $ingredients = Ingredient::all();
         return view('dishes.form', compact('ingredients'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('dishes'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -62,6 +64,7 @@ class DishController extends Controller
 
     public function edit(Dish $dish): View
     {
+        abort_unless(auth()->user()->canWrite('dishes'), 403);
         $dish->load('ingredients');
         $ingredients = Ingredient::all();
         return view('dishes.form', compact('dish', 'ingredients'));
@@ -69,6 +72,7 @@ class DishController extends Controller
 
     public function update(Request $request, Dish $dish): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('dishes'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -103,6 +107,7 @@ class DishController extends Controller
 
     public function destroy(Dish $dish): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('dishes'), 403);
         $dish->delete();
         return redirect()->route('dishes.index')->with('success', 'Блюдо удалено');
     }

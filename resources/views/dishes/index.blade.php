@@ -5,7 +5,9 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Блюда</h1>
-        <a href="{{ route('dishes.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
+        @if (auth()->user()->canWrite('dishes'))
+            <a href="{{ route('dishes.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -34,11 +36,13 @@
                         </td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('dishes.show', $dish) }}" class="text-blue-500 hover:text-blue-700 mr-2">👁</a>
-                            <a href="{{ route('dishes.edit', $dish) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
-                            <form action="{{ route('dishes.destroy', $dish) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
-                            </form>
+                            @if (auth()->user()->canWrite('dishes'))
+                                <a href="{{ route('dishes.edit', $dish) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
+                                <form action="{{ route('dishes.destroy', $dish) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

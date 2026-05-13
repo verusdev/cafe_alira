@@ -17,11 +17,13 @@ class RefrigeratorController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->canWrite('refrigerators'), 403);
         return view('refrigerators.form');
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('refrigerators'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'nullable|string|max:255',
@@ -41,11 +43,13 @@ class RefrigeratorController extends Controller
 
     public function edit(Refrigerator $refrigerator): View
     {
+        abort_unless(auth()->user()->canWrite('refrigerators'), 403);
         return view('refrigerators.form', compact('refrigerator'));
     }
 
     public function update(Request $request, Refrigerator $refrigerator): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('refrigerators'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'nullable|string|max:255',
@@ -59,6 +63,7 @@ class RefrigeratorController extends Controller
 
     public function destroy(Refrigerator $refrigerator): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('refrigerators'), 403);
         $refrigerator->delete();
         return redirect()->route('refrigerators.index')->with('success', 'Холодильник удален');
     }

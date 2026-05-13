@@ -6,7 +6,9 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Список закупок: {{ $event->client_name }}</h1>
         <div>
-            <a href="{{ route('purchases.create', ['event_id' => $event->id]) }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Оформить закупку</a>
+            @if (auth()->user()->canWrite('purchases'))
+                <a href="{{ route('purchases.create', ['event_id' => $event->id]) }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Оформить закупку</a>
+            @endif
             <a href="{{ route('events.show', $event) }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Назад</a>
         </div>
     </div>

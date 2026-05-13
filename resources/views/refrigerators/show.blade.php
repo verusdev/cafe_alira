@@ -6,7 +6,9 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">{{ $refrigerator->name }}</h1>
         <div>
-            <a href="{{ route('refrigerators.edit', $refrigerator) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Редактировать</a>
+            @if (auth()->user()->canWrite('refrigerators'))
+                <a href="{{ route('refrigerators.edit', $refrigerator) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Редактировать</a>
+            @endif
             <a href="{{ route('refrigerators.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Назад</a>
         </div>
     </div>
@@ -25,7 +27,9 @@
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Содержимое</h2>
-            <a href="{{ route('inventory.create', ['refrigerator_id' => $refrigerator->id]) }}" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">+ Добавить</a>
+            @if (auth()->user()->canWrite('inventory'))
+                <a href="{{ route('inventory.create', ['refrigerator_id' => $refrigerator->id]) }}" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">+ Добавить</a>
+            @endif
         </div>
         @if($refrigerator->inventories->count())
             <table class="w-full">

@@ -17,11 +17,13 @@ class IngredientController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->canWrite('ingredients'), 403);
         return view('ingredients.form');
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('ingredients'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'unit' => 'required|string|max:50',
@@ -42,11 +44,13 @@ class IngredientController extends Controller
 
     public function edit(Ingredient $ingredient): View
     {
+        abort_unless(auth()->user()->canWrite('ingredients'), 403);
         return view('ingredients.form', compact('ingredient'));
     }
 
     public function update(Request $request, Ingredient $ingredient): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('ingredients'), 403);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'unit' => 'required|string|max:50',
@@ -61,6 +65,7 @@ class IngredientController extends Controller
 
     public function destroy(Ingredient $ingredient): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('ingredients'), 403);
         $ingredient->delete();
         return redirect()->route('ingredients.index')->with('success', 'Ингредиент удален');
     }

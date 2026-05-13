@@ -5,7 +5,9 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Запасы (холодильники)</h1>
-        <a href="{{ route('inventory.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Добавить</a>
+        @if (auth()->user()->canWrite('inventory'))
+            <a href="{{ route('inventory.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Добавить</a>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -29,11 +31,13 @@
                             {{ $inv->expiration_date ? $inv->expiration_date->format('d.m.Y') : '—' }}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <a href="{{ route('inventory.edit', $inv) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
-                            <form action="{{ route('inventory.destroy', $inv) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
-                            </form>
+                            @if (auth()->user()->canWrite('inventory'))
+                                <a href="{{ route('inventory.edit', $inv) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
+                                <form action="{{ route('inventory.destroy', $inv) }}" method="POST" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

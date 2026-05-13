@@ -22,12 +22,14 @@ class EventController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->canWrite('events'), 403);
         $dishes = Dish::where('is_active', true)->get();
         return view('events.form', compact('dishes'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('events'), 403);
         $validated = $request->validate([
             'client_name' => 'required|string|max:255',
             'client_phone' => 'nullable|string|max:50',
@@ -73,6 +75,7 @@ class EventController extends Controller
 
     public function edit(Event $event): View
     {
+        abort_unless(auth()->user()->canWrite('events'), 403);
         $event->load('dishes');
         $dishes = Dish::where('is_active', true)->get();
         return view('events.form', compact('event', 'dishes'));
@@ -80,6 +83,7 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('events'), 403);
         $validated = $request->validate([
             'client_name' => 'required|string|max:255',
             'client_phone' => 'nullable|string|max:50',
@@ -120,6 +124,7 @@ class EventController extends Controller
 
     public function destroy(Event $event): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('events'), 403);
         $event->delete();
         return redirect()->route('events.index')->with('success', 'Мероприятие удалено');
     }

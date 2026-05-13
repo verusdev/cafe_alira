@@ -23,6 +23,7 @@ class PurchaseController extends Controller
 
     public function create(Request $request, EventCalculationService $calculator): View
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $events = Event::whereIn('status', ['new', 'confirmed'])->get();
         $ingredients = Ingredient::all();
         $selectedEvent = null;
@@ -38,6 +39,7 @@ class PurchaseController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $validated = $request->validate([
             'event_id' => 'nullable|exists:events,id',
             'purchase_date' => 'required|date',
@@ -83,6 +85,7 @@ class PurchaseController extends Controller
 
     public function edit(Purchase $purchase): View
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $purchase->load('items');
         $events = Event::all();
         $ingredients = Ingredient::all();
@@ -91,6 +94,7 @@ class PurchaseController extends Controller
 
     public function update(Request $request, Purchase $purchase): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $validated = $request->validate([
             'event_id' => 'nullable|exists:events,id',
             'purchase_date' => 'required|date',
@@ -131,12 +135,14 @@ class PurchaseController extends Controller
 
     public function destroy(Purchase $purchase): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $purchase->delete();
         return redirect()->route('purchases.index')->with('success', 'Закупка удалена');
     }
 
     public function complete(Purchase $purchase): RedirectResponse
     {
+        abort_unless(auth()->user()->canWrite('purchases'), 403);
         $purchase->update(['status' => 'completed']);
 
         foreach ($purchase->items as $item) {
