@@ -62,8 +62,8 @@
                     <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <span class="text-3xl">🚚</span>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Кейтеринг</h3>
-                    <p class="text-gray-500">Доставка готовых блюд и обслуживание на вашей площадке. Всё включено: от сервировки до уборки.</p>
+                    <h3 class="text-xl font-bold mb-2">Доставка блюд</h3>
+                    <p class="text-gray-500">Доставка готовых блюд к вашему столу. Свежая кухня, удобная упаковка, быстрая подача.</p>
                 </div>
             </div>
         </div>
