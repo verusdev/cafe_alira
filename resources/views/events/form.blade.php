@@ -36,10 +36,10 @@
                 <label class="block text-sm font-medium mb-1">Статус *</label>
                 <select name="status" class="w-full border rounded px-3 py-2" required>
                     <option value="new" {{ old('status', $event->status ?? '') == 'new' ? 'selected' : '' }}>Новый</option>
-                    <option value="confirmed" {{ old('status', $event->status ?? '') == 'confirmed' ? 'selected' : '' }}>Подтвержден</option>
+                    <option value="confirmed" {{ old('status', $event->status ?? '') == 'confirmed' ? 'selected' : '' }}>Подтверждён</option>
                     <option value="in_progress" {{ old('status', $event->status ?? '') == 'in_progress' ? 'selected' : '' }}>В процессе</option>
-                    <option value="completed" {{ old('status', $event->status ?? '') == 'completed' ? 'selected' : '' }}>Завершен</option>
-                    <option value="cancelled" {{ old('status', $event->status ?? '') == 'cancelled' ? 'selected' : '' }}>Отменен</option>
+                    <option value="completed" {{ old('status', $event->status ?? '') == 'completed' ? 'selected' : '' }}>Завершён</option>
+                    <option value="cancelled" {{ old('status', $event->status ?? '') == 'cancelled' ? 'selected' : '' }}>Отменён</option>
                 </select>
             </div>
             <div>

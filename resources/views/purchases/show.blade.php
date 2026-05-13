@@ -25,7 +25,7 @@
             </div>
             <div>
                 <p class="text-gray-500">Статус</p>
-                <p class="font-bold">{{ $purchase->status }}</p>
+                <p class="font-bold">{{ $purchase->status_label }}</p>
             </div>
             <div>
                 <p class="text-gray-500">Мероприятие</p>

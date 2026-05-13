@@ -31,7 +31,7 @@
                         <td class="px-4 py-3">{{ $event->event_date->format('d.m.Y') }}</td>
                         <td class="px-4 py-3">{{ $event->people_count }}</td>
                         <td class="px-4 py-3">{{ $event->dishes->count() }}</td>
-                        <td class="px-4 py-3">{{ $event->status }}</td>
+                        <td class="px-4 py-3">{{ $event->status_label }}</td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('events.show', $event) }}" class="text-blue-500 hover:text-blue-700 mr-2">👁</a>
                             @if (auth()->user()->canWrite('events'))

@@ -30,7 +30,7 @@
             </div>
             <div>
                 <p class="text-gray-500">Статус</p>
-                <p class="font-bold">{{ $event->status }}</p>
+                <p class="font-bold">{{ $event->status_label }}</p>
             </div>
             <div>
                 <p class="text-gray-500">Телефон</p>

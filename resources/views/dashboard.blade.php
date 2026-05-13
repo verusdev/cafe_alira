@@ -43,7 +43,7 @@
                                 <td class="py-2">{{ $event->type_label }}</td>
                                 <td class="py-2">{{ $event->event_date->format('d.m.Y') }}</td>
                                 <td class="py-2">{{ $event->people_count }}</td>
-                                <td class="py-2">{{ $event->status }}</td>
+                                <td class="py-2">{{ $event->status_label }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -69,7 +69,7 @@
                             <tr class="border-t">
                                 <td class="py-2">{{ $purchase->purchase_date->format('d.m.Y') }}</td>
                                 <td class="py-2">{{ number_format($purchase->total_cost, 2) }} ₽</td>
-                                <td class="py-2">{{ $purchase->status }}</td>
+                                <td class="py-2">{{ $purchase->status_label }}</td>
                             </tr>
                         @endforeach
                     </tbody>

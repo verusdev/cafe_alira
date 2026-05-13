@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Purchase extends Model
 {
+    const STATUSES = [
+        'pending' => 'Ожидает',
+        'completed' => 'Завершена',
+        'cancelled' => 'Отменена',
+    ];
+
     protected $fillable = [
         'event_id',
         'purchase_date',
@@ -22,6 +28,11 @@ class Purchase extends Model
             'purchase_date' => 'date',
             'total_cost' => 'decimal:2',
         ];
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUSES[$this->status] ?? $this->status;
     }
 
     public function event(): BelongsTo

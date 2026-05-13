@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
+    const STATUSES = [
+        'new' => 'Новый',
+        'confirmed' => 'Подтверждён',
+        'in_progress' => 'В процессе',
+        'completed' => 'Завершён',
+        'cancelled' => 'Отменён',
+    ];
+
     const TYPES = [
         'banquet' => ['label' => 'Банкет', 'price_per_person' => 2500],
         'buffet' => ['label' => 'Фуршет', 'price_per_person' => 1500],
@@ -92,6 +100,11 @@ class Event extends Model
     public function getExpectedProfitAttribute(): float
     {
         return $this->total_price - $this->ingredient_cost;
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUSES[$this->status] ?? $this->status;
     }
 
     public function dishes(): BelongsToMany
