@@ -102,7 +102,7 @@
                                 <li>✓ Чай/кофе безлимит</li>
                             @endif
                         </ul>
-                        <a href="#contact" class="block text-center {{ $key === 'wedding' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700' }} font-bold px-4 py-3 rounded-xl hover:bg-orange-500 hover:text-white transition">Выбрать</a>
+                        <a href="#contact" data-event-type="{{ $key }}" class="select-event block text-center {{ $key === 'wedding' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700' }} font-bold px-4 py-3 rounded-xl hover:bg-orange-500 hover:text-white transition">Выбрать</a>
                     </div>
                 @endforeach
             </div>
@@ -148,7 +148,7 @@
                         </div>
                         <div>
                             <label class="block text-white/80 text-sm font-medium mb-2">Тип мероприятия *</label>
-                            <select name="event_type" required
+                            <select id="event_type" name="event_type" required
                                 class="w-full px-4 py-3 rounded-xl bg-white/20 backdrop-blur text-white border border-white/20 focus:ring-2 focus:ring-yellow-400 focus:outline-none">
                                 @foreach($eventTypes as $key => $type)
                                     <option value="{{ $key }}" {{ old('event_type') == $key ? 'selected' : '' }} class="text-gray-900">{{ $type['label'] }}</option>
@@ -192,8 +192,19 @@
             <p class="text-white text-lg font-bold mb-2">☕ Кафе</p>
             <p>г. Москва, ул. Примерная, 123</p>
             <p>+7 (999) 123-45-67</p>
-            <p class="mt-4 text-sm">© {{ date('Y') }} Кафе. Все права защищены.</p>
+                    <p class="mt-4 text-sm">© {{ date('Y') }} Кафе. Все права защищены.</p>
         </div>
     </footer>
+    <script>
+        document.querySelectorAll('.select-event').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                var type = this.getAttribute('data-event-type');
+                var select = document.getElementById('event_type');
+                if (select) {
+                    select.value = type;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
