@@ -40,6 +40,10 @@
                 <p class="text-gray-500">Email</p>
                 <p class="font-bold">{{ $event->client_email ?? '—' }}</p>
             </div>
+            <div>
+                <p class="text-gray-500">Тип мероприятия</p>
+                <p class="font-bold">{{ $event->type_label }}</p>
+            </div>
         </div>
         @if($event->notes)
             <div class="mt-4">
@@ -72,6 +76,44 @@
             <p class="text-gray-500 mb-4">Меню не составлено</p>
         @endif
     </div>
+
+    @if(auth()->user()->isManager())
+        <div class="bg-white rounded-lg shadow p-6 mb-4 border-2 border-yellow-400">
+            <h2 class="text-xl font-bold mb-4">Финансы</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                    <p class="text-gray-500 text-sm">Тип мероприятия</p>
+                    <p class="font-bold text-lg">{{ $finance['type_label'] }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Базовая цена</p>
+                    <p class="font-bold text-lg">{{ number_format($finance['type_price'], 0, ',', ' ') }} ₽/чел</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Стоимость услуги</p>
+                    <p class="font-bold text-lg">{{ number_format($finance['service_price'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Стоимость меню</p>
+                    <p class="font-bold text-lg">{{ number_format($finance['menu_price'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Итого клиенту</p>
+                    <p class="font-bold text-xl text-blue-600">{{ number_format($finance['total_price'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Затраты на продукты</p>
+                    <p class="font-bold text-lg">{{ number_format($finance['ingredient_cost'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Ожидаемая прибыль</p>
+                    <p class="font-bold text-xl {{ $finance['expected_profit'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ number_format($finance['expected_profit'], 2, ',', ' ') }} ₽
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-xl font-bold mb-4">Расчет продуктов</h2>

@@ -24,7 +24,8 @@ class EventController extends Controller
     {
         abort_unless(auth()->user()->canWrite('events'), 403);
         $dishes = Dish::where('is_active', true)->get();
-        return view('events.form', compact('dishes'));
+        $eventTypes = Event::TYPES;
+        return view('events.form', compact('dishes', 'eventTypes'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -34,6 +35,7 @@ class EventController extends Controller
             'client_name' => 'required|string|max:255',
             'client_phone' => 'nullable|string|max:50',
             'client_email' => 'nullable|email|max:255',
+            'event_type' => 'required|string|in:' . implode(',', array_keys(Event::TYPES)),
             'event_date' => 'required|date',
             'event_time' => 'nullable',
             'people_count' => 'required|integer|min:1',
@@ -48,6 +50,7 @@ class EventController extends Controller
             'client_name' => $validated['client_name'],
             'client_phone' => $validated['client_phone'] ?? null,
             'client_email' => $validated['client_email'] ?? null,
+            'event_type' => $validated['event_type'],
             'event_date' => $validated['event_date'],
             'event_time' => $validated['event_time'] ?? null,
             'people_count' => $validated['people_count'],
@@ -70,7 +73,16 @@ class EventController extends Controller
     {
         $event->load('dishes.ingredients');
         $requirements = $calculator->calculateRequiredIngredients($event);
-        return view('events.show', compact('event', 'requirements'));
+        $finance = [
+            'type_label' => $event->type_label,
+            'type_price' => $event->type_price,
+            'service_price' => $event->service_price,
+            'menu_price' => $event->menu_price,
+            'total_price' => $event->total_price,
+            'ingredient_cost' => $event->ingredient_cost,
+            'expected_profit' => $event->expected_profit,
+        ];
+        return view('events.show', compact('event', 'requirements', 'finance'));
     }
 
     public function edit(Event $event): View
@@ -78,7 +90,8 @@ class EventController extends Controller
         abort_unless(auth()->user()->canWrite('events'), 403);
         $event->load('dishes');
         $dishes = Dish::where('is_active', true)->get();
-        return view('events.form', compact('event', 'dishes'));
+        $eventTypes = Event::TYPES;
+        return view('events.form', compact('event', 'dishes', 'eventTypes'));
     }
 
     public function update(Request $request, Event $event): RedirectResponse
@@ -88,6 +101,7 @@ class EventController extends Controller
             'client_name' => 'required|string|max:255',
             'client_phone' => 'nullable|string|max:50',
             'client_email' => 'nullable|email|max:255',
+            'event_type' => 'required|string|in:' . implode(',', array_keys(Event::TYPES)),
             'event_date' => 'required|date',
             'event_time' => 'nullable',
             'people_count' => 'required|integer|min:1',
@@ -102,6 +116,7 @@ class EventController extends Controller
             'client_name' => $validated['client_name'],
             'client_phone' => $validated['client_phone'] ?? null,
             'client_email' => $validated['client_email'] ?? null,
+            'event_type' => $validated['event_type'],
             'event_date' => $validated['event_date'],
             'event_time' => $validated['event_time'] ?? null,
             'people_count' => $validated['people_count'],
@@ -136,7 +151,7 @@ class EventController extends Controller
 
     public function calendarData(): JsonResponse
     {
-        $events = Event::select('id', 'client_name', 'event_date', 'event_time', 'people_count', 'status')
+        $events = Event::select('id', 'client_name', 'event_type', 'event_date', 'event_time', 'people_count', 'status')
             ->get()
             ->map(function ($event) {
                 $statusColors = [
@@ -160,6 +175,7 @@ class EventController extends Controller
                     'extendedProps' => [
                         'status' => $event->status,
                         'people_count' => $event->people_count,
+                        'event_type' => $event->type_label,
                     ],
                 ];
             });

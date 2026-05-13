@@ -15,6 +15,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left">Клиент</th>
+                    <th class="px-4 py-3 text-left">Тип</th>
                     <th class="px-4 py-3 text-left">Дата</th>
                     <th class="px-4 py-3 text-left">Гостей</th>
                     <th class="px-4 py-3 text-left">Блюд</th>
@@ -26,6 +27,7 @@
                 @foreach($events as $event)
                     <tr class="border-t hover:bg-gray-50">
                         <td class="px-4 py-3">{{ $event->client_name }}</td>
+                        <td class="px-4 py-3">{{ $event->type_label }}</td>
                         <td class="px-4 py-3">{{ $event->event_date->format('d.m.Y') }}</td>
                         <td class="px-4 py-3">{{ $event->people_count }}</td>
                         <td class="px-4 py-3">{{ $event->dishes->count() }}</td>

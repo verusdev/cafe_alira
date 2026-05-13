@@ -30,6 +30,7 @@
                     <thead>
                         <tr class="text-left text-gray-500">
                             <th class="pb-2">Клиент</th>
+                            <th class="pb-2">Тип</th>
                             <th class="pb-2">Дата</th>
                             <th class="pb-2">Гостей</th>
                             <th class="pb-2">Статус</th>
@@ -39,6 +40,7 @@
                         @foreach($stats['upcoming_events'] as $event)
                             <tr class="border-t">
                                 <td class="py-2">{{ $event->client_name }}</td>
+                                <td class="py-2">{{ $event->type_label }}</td>
                                 <td class="py-2">{{ $event->event_date->format('d.m.Y') }}</td>
                                 <td class="py-2">{{ $event->people_count }}</td>
                                 <td class="py-2">{{ $event->status }}</td>
@@ -77,4 +79,32 @@
             @endif
         </div>
     </div>
+
+    @if(auth()->user()->isManager())
+        <div class="bg-white rounded-lg shadow p-6 mt-6 border-2 border-yellow-400">
+            <h2 class="text-xl font-bold mb-4">Финансовая сводка</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <p class="text-gray-500 text-sm">Общая выручка (активные)</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ number_format($stats['total_revenue'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Затраты на продукты (активные)</p>
+                    <p class="text-2xl font-bold">{{ number_format($stats['total_ingredient_cost'], 2, ',', ' ') }} ₽</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Ожидаемая прибыль</p>
+                    <p class="text-2xl font-bold {{ $stats['expected_profit'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ number_format($stats['expected_profit'], 2, ',', ' ') }} ₽
+                    </p>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Рентабельность</p>
+                    <p class="text-2xl font-bold {{ $stats['profit_margin'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                        {{ number_format($stats['profit_margin'], 1) }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection

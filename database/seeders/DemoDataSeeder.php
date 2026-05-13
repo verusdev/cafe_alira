@@ -121,6 +121,7 @@ class DemoDataSeeder extends Seeder
         $event = Event::create([
             'client_name' => 'Иванов Иван',
             'client_phone' => '+7-999-123-45-67',
+            'event_type' => 'banquet',
             'event_date' => now()->addDays(14),
             'event_time' => '18:00',
             'people_count' => 20,
@@ -136,6 +137,7 @@ class DemoDataSeeder extends Seeder
         $event2 = Event::create([
             'client_name' => 'Петрова Анна',
             'client_phone' => '+7-999-987-65-43',
+            'event_type' => 'wedding',
             'event_date' => now()->addDays(7),
             'people_count' => 10,
             'status' => 'new',

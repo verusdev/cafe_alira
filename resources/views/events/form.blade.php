@@ -23,6 +23,16 @@
                 <input type="email" name="client_email" value="{{ old('client_email', $event->client_email ?? '') }}" class="w-full border rounded px-3 py-2">
             </div>
             <div>
+                <label class="block text-sm font-medium mb-1">Тип мероприятия *</label>
+                <select name="event_type" class="w-full border rounded px-3 py-2" required>
+                    @foreach($eventTypes as $key => $type)
+                        <option value="{{ $key }}" {{ old('event_type', $event->event_type ?? '') == $key ? 'selected' : '' }}>
+                            {{ $type['label'] }} ({{ number_format($type['price_per_person'], 0, ',', ' ') }} ₽/чел)
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="block text-sm font-medium mb-1">Статус *</label>
                 <select name="status" class="w-full border rounded px-3 py-2" required>
                     <option value="new" {{ old('status', $event->status ?? '') == 'new' ? 'selected' : '' }}>Новый</option>
