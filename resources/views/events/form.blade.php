@@ -1,0 +1,133 @@
+@extends('layouts.app')
+
+@section('title', isset($event) ? 'Редактировать мероприятие' : 'Создать мероприятие')
+
+@section('content')
+    <h1 class="text-2xl font-bold mb-4">{{ isset($event) ? 'Редактировать мероприятие' : 'Создать мероприятие' }}</h1>
+
+    <form action="{{ isset($event) ? route('events.update', $event) : route('events.store') }}" method="POST" class="bg-white rounded-lg shadow p-6">
+        @csrf
+        @if(isset($event)) @method('PUT') @endif
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Имя клиента *</label>
+                <input type="text" name="client_name" value="{{ old('client_name', $event->client_name ?? '') }}" class="w-full border rounded px-3 py-2" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Телефон</label>
+                <input type="text" name="client_phone" value="{{ old('client_phone', $event->client_phone ?? '') }}" class="w-full border rounded px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" name="client_email" value="{{ old('client_email', $event->client_email ?? '') }}" class="w-full border rounded px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Статус *</label>
+                <select name="status" class="w-full border rounded px-3 py-2" required>
+                    <option value="new" {{ old('status', $event->status ?? '') == 'new' ? 'selected' : '' }}>Новый</option>
+                    <option value="confirmed" {{ old('status', $event->status ?? '') == 'confirmed' ? 'selected' : '' }}>Подтвержден</option>
+                    <option value="in_progress" {{ old('status', $event->status ?? '') == 'in_progress' ? 'selected' : '' }}>В процессе</option>
+                    <option value="completed" {{ old('status', $event->status ?? '') == 'completed' ? 'selected' : '' }}>Завершен</option>
+                    <option value="cancelled" {{ old('status', $event->status ?? '') == 'cancelled' ? 'selected' : '' }}>Отменен</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Дата мероприятия *</label>
+                <input type="date" name="event_date" value="{{ old('event_date', isset($event) ? $event->event_date->format('Y-m-d') : '') }}" class="w-full border rounded px-3 py-2" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Время</label>
+                <input type="time" name="event_time" value="{{ old('event_time', isset($event) && $event->event_time ? date('H:i', strtotime($event->event_time)) : '') }}" class="w-full border rounded px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Количество человек *</label>
+                <input type="number" name="people_count" value="{{ old('people_count', $event->people_count ?? 1) }}" class="w-full border rounded px-3 py-2" required min="1">
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Заметки</label>
+            <textarea name="notes" rows="3" class="w-full border rounded px-3 py-2">{{ old('notes', $event->notes ?? '') }}</textarea>
+        </div>
+
+        <div class="mb-4">
+            <h3 class="text-lg font-bold mb-2">Блюда</h3>
+            <table class="w-full" id="dishes-table">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Блюдо</th>
+                        <th class="px-4 py-2 text-left">Порций</th>
+                        <th class="px-4 py-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(isset($event))
+                        @foreach($event->dishes as $dish)
+                            <tr class="border-t">
+                                <td class="px-4 py-2">
+                                    <select name="dishes[{{ $loop->index }}][id]" class="w-full border rounded px-3 py-2">
+                                        <option value="">-- выберите --</option>
+                                        @foreach($dishes as $item)
+                                            <option value="{{ $item->id }}" {{ $item->id == $dish->id ? 'selected' : '' }}>{{ $item->name }} ({{ number_format($item->price_per_person, 2) }} ₽/чел)</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input type="number" name="dishes[{{ $loop->index }}][servings]" value="{{ $dish->pivot->servings }}" class="w-full border rounded px-3 py-2" min="0">
+                                </td>
+                                <td class="px-4 py-2"><button type="button" class="text-red-500 remove-row">Удалить</button></td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
+            <button type="button" id="add-dish" class="mt-2 text-blue-500 hover:text-blue-700">+ Добавить блюдо</button>
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+            {{ isset($event) ? 'Обновить' : 'Создать' }}
+        </button>
+    </form>
+@endsection
+
+@section('scripts')
+<script>
+    let dishIndex = {{ isset($event) ? $event->dishes->count() : 0 }};
+    const dishes = @json($dishes);
+
+    document.getElementById('add-dish').addEventListener('click', function() {
+        const tbody = document.querySelector('#dishes-table tbody');
+        const row = document.createElement('tr');
+        row.className = 'border-t';
+        row.innerHTML = `
+            <td class="px-4 py-2">
+                <select name="dishes[${dishIndex}][id]" class="w-full border rounded px-3 py-2">
+                    <option value="">-- выберите --</option>
+                    ${dishes.map(d => `<option value="${d.id}">${d.name} (${(d.price_per_person/1).toFixed(2)} ₽/чел)</option>`).join('')}
+                </select>
+            </td>
+            <td class="px-4 py-2">
+                <input type="number" name="dishes[${dishIndex}][servings]" class="w-full border rounded px-3 py-2" min="0">
+            </td>
+            <td class="px-4 py-2"><button type="button" class="text-red-500 remove-row">Удалить</button></td>
+        `;
+        tbody.appendChild(row);
+        dishIndex++;
+        attachRemoveHandlers();
+    });
+
+    function attachRemoveHandlers() {
+        document.querySelectorAll('.remove-row').forEach(btn => {
+            btn.removeEventListener('click', handleRemove);
+            btn.addEventListener('click', handleRemove);
+        });
+    }
+
+    function handleRemove(e) {
+        e.target.closest('tr').remove();
+    }
+
+    attachRemoveHandlers();
+</script>
+@endsection
