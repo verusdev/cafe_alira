@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кафе — банкеты и мероприятия</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
 </head>
 <body class="font-sans antialiased">
     <nav class="bg-white/80 backdrop-blur-md shadow-sm fixed w-full z-50">

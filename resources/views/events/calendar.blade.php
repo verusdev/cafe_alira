@@ -14,9 +14,7 @@
 @endsection
 
 @section('scripts')
-    @vite('resources/js/app.js')
-    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/main.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/main.min.css" rel="stylesheet">
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
