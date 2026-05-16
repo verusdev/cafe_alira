@@ -31,6 +31,13 @@
                     @endif
                 </div>
                 <div class="flex items-center space-x-4">
+                    @php $unread = auth()->user()->unreadNotifications->count(); @endphp
+                    <a href="{{ route('notifications.index') }}" class="relative text-gray-500 hover:text-gray-700">
+                        🔔
+                        @if($unread)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ $unread > 9 ? '9+' : $unread }}</span>
+                        @endif
+                    </a>
                     <span class="text-sm text-gray-500">{{ auth()->user()->name }} ({{ auth()->user()->roleLabel() }})</span>
                     <form action="{{ route('logout') }}" method="POST" class="inline">
                         @csrf

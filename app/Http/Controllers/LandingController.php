@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
+use App\Notifications\NewEventFromLanding;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,7 +30,7 @@ class LandingController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        Event::create([
+        $event = Event::create([
             'client_name' => $validated['client_name'],
             'client_phone' => $validated['client_phone'],
             'client_email' => $validated['client_email'] ?? null,
@@ -39,6 +41,11 @@ class LandingController extends Controller
             'status' => 'new',
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        $notifiable = User::whereIn('role', ['order_taker', 'manager'])->get();
+        foreach ($notifiable as $user) {
+            $user->notify(new NewEventFromLanding($event));
+        }
 
         return redirect()->route('landing')->with('success', 'Ваша заявка принята! Мы свяжемся с вами в ближайшее время.');
     }
