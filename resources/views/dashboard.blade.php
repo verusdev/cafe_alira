@@ -82,7 +82,10 @@
 
     @if(auth()->user()->isManager())
         <div class="bg-white rounded-lg shadow p-6 mt-6 border-2 border-yellow-400">
-            <h2 class="text-xl font-bold mb-4">Финансовая сводка</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Финансовая сводка</h2>
+                <a href="{{ route('export.finance') }}" class="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700">📥 Excel</a>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <p class="text-gray-500 text-sm">Общая выручка (активные)</p>

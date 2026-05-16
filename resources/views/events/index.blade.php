@@ -5,9 +5,14 @@
 @section('content')
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Мероприятия</h1>
-        @if (auth()->user()->canWrite('events'))
-            <a href="{{ route('events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
-        @endif
+        <div class="flex gap-2">
+            @if (auth()->user()->canWrite('events'))
+                <a href="{{ route('events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">+ Создать</a>
+            @endif
+            @if (auth()->user()->isManager())
+                <a href="{{ route('export.events') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">📥 Excel</a>
+            @endif
+        </div>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">

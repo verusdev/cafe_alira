@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\LandingController;
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('events', EventController::class);
     Route::get('events/{event}/shopping-list', [EventController::class, 'shoppingList'])->name('events.shopping-list');
     Route::get('calendar', [EventController::class, 'calendar'])->name('events.calendar');
+    Route::get('export/events', [ExportController::class, 'events'])->name('export.events');
+    Route::get('export/finance', [ExportController::class, 'finance'])->name('export.finance');
     Route::get('api/events', [EventController::class, 'calendarData'])->name('events.calendar-data');
 
     Route::resource('dishes', DishController::class);
