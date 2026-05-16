@@ -35,12 +35,19 @@
             <div>
                 <label class="block text-sm font-medium mb-1">Статус *</label>
                 <select name="status" class="w-full border rounded px-3 py-2" required>
-                    <option value="new" {{ old('status', $event->status ?? '') == 'new' ? 'selected' : '' }}>Новый</option>
-                    <option value="confirmed" {{ old('status', $event->status ?? '') == 'confirmed' ? 'selected' : '' }}>Подтверждён</option>
-                    <option value="in_progress" {{ old('status', $event->status ?? '') == 'in_progress' ? 'selected' : '' }}>В процессе</option>
-                    <option value="completed" {{ old('status', $event->status ?? '') == 'completed' ? 'selected' : '' }}>Завершён</option>
-                    <option value="cancelled" {{ old('status', $event->status ?? '') == 'cancelled' ? 'selected' : '' }}>Отменён</option>
+                    @if(isset($event))
+                        @foreach($allowedStatuses as $s)
+                            @isset(\App\Models\Event::STATUSES[$s])
+                                <option value="{{ $s }}" {{ old('status', $event->status) == $s ? 'selected' : '' }}>{{ \App\Models\Event::STATUSES[$s] }}</option>
+                            @endisset
+                        @endforeach
+                    @else
+                        <option value="new" selected>Новый</option>
+                    @endif
                 </select>
+                @if(isset($event) && count($allowedStatuses) <= 1)
+                    <p class="text-gray-400 text-xs mt-1">Статус нельзя изменить</p>
+                @endif
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Дата мероприятия *</label>

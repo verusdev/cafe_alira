@@ -30,7 +30,7 @@
             </div>
             <div>
                 <p class="text-gray-500">Статус</p>
-                <p class="font-bold">{{ $event->status_label }}</p>
+                <p class="font-bold"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ $event->status_color }}">{{ $event->status_label }}</span></p>
             </div>
             <div>
                 <p class="text-gray-500">Телефон</p>

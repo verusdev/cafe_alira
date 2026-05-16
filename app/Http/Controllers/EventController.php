@@ -91,7 +91,8 @@ class EventController extends Controller
         $event->load('dishes');
         $dishes = Dish::where('is_active', true)->get();
         $eventTypes = Event::TYPES;
-        return view('events.form', compact('event', 'dishes', 'eventTypes'));
+        $allowedStatuses = array_merge([$event->status], $event->allowedTransitions());
+        return view('events.form', compact('event', 'dishes', 'eventTypes', 'allowedStatuses'));
     }
 
     public function update(Request $request, Event $event): RedirectResponse
@@ -111,6 +112,8 @@ class EventController extends Controller
             'dishes.*.id' => 'exists:dishes,id',
             'dishes.*.servings' => 'required|integer|min:0',
         ]);
+
+        abort_unless($event->canTransitionTo($validated['status']), 403, 'Недопустимый переход статуса');
 
         $event->update([
             'client_name' => $validated['client_name'],

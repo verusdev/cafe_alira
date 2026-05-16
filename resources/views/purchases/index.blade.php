@@ -29,7 +29,7 @@
                         <td class="px-4 py-3">{{ $purchase->event->client_name ?? '—' }}</td>
                         <td class="px-4 py-3">{{ $purchase->items->count() }}</td>
                         <td class="px-4 py-3">{{ number_format($purchase->total_cost, 2) }} ₽</td>
-                        <td class="px-4 py-3">{{ $purchase->status_label }}</td>
+                        <td class="px-4 py-3"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ $purchase->status_color }}">{{ $purchase->status_label }}</span></td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('purchases.show', $purchase) }}" class="text-blue-500 hover:text-blue-700 mr-2">👁</a>
                             @if(auth()->user()->canWrite('purchases') && $purchase->status == 'pending')
