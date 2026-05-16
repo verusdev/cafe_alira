@@ -12,20 +12,56 @@ use Illuminate\View\View;
 
 class EventController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $events = Event::with('dishes')
-            ->orderBy('event_date', 'desc')
-            ->paginate(15);
-        return view('events.index', compact('events'));
+        $query = Event::with('dishes');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('client_name', 'like', "%{$search}%")
+                  ->orWhere('client_phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($eventType = $request->input('event_type')) {
+            $query->where('event_type', $eventType);
+        }
+
+        if ($dateFrom = $request->input('date_from')) {
+            $query->whereDate('event_date', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->input('date_to')) {
+            $query->whereDate('event_date', '<=', $dateTo);
+        }
+
+        $events = $query->orderBy('event_date', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        $eventTypes = Event::TYPES;
+
+        return view('events.index', compact('events', 'eventTypes'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         abort_unless(auth()->user()->canWrite('events'), 403);
         $dishes = Dish::where('is_active', true)->get();
         $eventTypes = Event::TYPES;
-        return view('events.form', compact('dishes', 'eventTypes'));
+        $previousEvents = collect();
+
+        if ($phone = $request->query('phone')) {
+            $previousEvents = Event::byPhone($phone)->orderBy('event_date', 'desc')->take(5)->get();
+        } elseif ($name = $request->query('client_name')) {
+            $previousEvents = Event::byName($name)->orderBy('event_date', 'desc')->take(5)->get();
+        }
+
+        return view('events.form', compact('dishes', 'eventTypes', 'previousEvents'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -82,7 +118,8 @@ class EventController extends Controller
             'ingredient_cost' => $event->ingredient_cost,
             'expected_profit' => $event->expected_profit,
         ];
-        return view('events.show', compact('event', 'requirements', 'finance'));
+        $previousEvents = $event->previousEvents($event->id);
+        return view('events.show', compact('event', 'requirements', 'finance', 'previousEvents'));
     }
 
     public function edit(Event $event): View
@@ -92,7 +129,8 @@ class EventController extends Controller
         $dishes = Dish::where('is_active', true)->get();
         $eventTypes = Event::TYPES;
         $allowedStatuses = array_merge([$event->status], $event->allowedTransitions());
-        return view('events.form', compact('event', 'dishes', 'eventTypes', 'allowedStatuses'));
+        $previousEvents = $event->previousEvents($event->id);
+        return view('events.form', compact('event', 'dishes', 'eventTypes', 'allowedStatuses', 'previousEvents'));
     }
 
     public function update(Request $request, Event $event): RedirectResponse
@@ -194,5 +232,18 @@ class EventController extends Controller
         $purchase = $event->purchases()->where('status', 'pending')->first();
 
         return view('events.shopping-list', compact('event', 'shoppingList', 'purchase'));
+    }
+
+    public function printShoppingList(Event $event, EventCalculationService $calculator): View
+    {
+        $event->load('dishes.ingredients');
+        $shoppingList = $calculator->getShoppingList($event);
+        return view('events.print-shopping-list', compact('event', 'shoppingList'));
+    }
+
+    public function printMenu(Event $event): View
+    {
+        $event->load('dishes');
+        return view('events.print-menu', compact('event'));
     }
 }

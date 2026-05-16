@@ -28,10 +28,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('events', EventController::class);
     Route::get('events/{event}/shopping-list', [EventController::class, 'shoppingList'])->name('events.shopping-list');
+    Route::get('events/{event}/print-shopping-list', [EventController::class, 'printShoppingList'])->name('events.print-shopping-list');
+    Route::get('events/{event}/print-menu', [EventController::class, 'printMenu'])->name('events.print-menu');
     Route::get('calendar', [EventController::class, 'calendar'])->name('events.calendar');
     Route::get('export/events', [ExportController::class, 'events'])->name('export.events');
     Route::get('export/finance', [ExportController::class, 'finance'])->name('export.finance');
-    Route::get('api/events', [EventController::class, 'calendarData'])->name('events.calendar-data');
+    Route::get('calendar-data', [EventController::class, 'calendarData'])->name('events.calendar-data');
 
     Route::resource('dishes', DishController::class);
     Route::resource('ingredients', IngredientController::class);

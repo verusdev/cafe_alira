@@ -9,6 +9,7 @@
             @if (auth()->user()->canWrite('events'))
                 <a href="{{ route('events.edit', $event) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Редактировать</a>
             @endif
+            <a href="{{ route('events.print-menu', $event) }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" target="_blank">🖨 Меню</a>
             <a href="{{ route('events.shopping-list', $event) }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Список закупок</a>
             <a href="{{ route('events.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Назад</a>
         </div>
@@ -115,8 +116,31 @@
         </div>
     @endif
 
+    @if($previousEvents->isNotEmpty())
+        <div class="bg-white rounded-lg shadow p-6 mb-4">
+            <h2 class="text-xl font-bold mb-4">Клиент также заказывал</h2>
+            <div class="space-y-2">
+                @foreach($previousEvents as $prev)
+                    <a href="{{ route('events.show', $prev) }}"
+                       class="block p-3 border rounded hover:bg-gray-50 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-medium">{{ $prev->event_date->format('d.m.Y') }}</span>
+                                <span class="text-gray-500 mx-2">—</span>
+                                <span>{{ $prev->type_label }}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-500">{{ $prev->people_count }} чел.</span>
+                                @include('events.partials.status-badge', ['status' => $prev->status])
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold mb-4">Расчет продуктов</h2>
         @if($requirements->count())
             <table class="w-full">
                 <thead class="bg-gray-50">

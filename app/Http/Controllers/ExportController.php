@@ -28,25 +28,26 @@ class ExportController extends Controller
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
+        $colsMap = range('A', 'L');
         foreach ($headers as $i => $h) {
-            $sheet->setCellValueByColumnAndRow($i + 1, 1, $h);
+            $sheet->setCellValue($colsMap[$i] . '1', $h);
         }
 
         $events = Event::with('dishes')->orderBy('event_date', 'desc')->get();
         $row = 2;
         foreach ($events as $event) {
-            $sheet->setCellValueByColumnAndRow(1, $row, $event->client_name);
-            $sheet->setCellValueByColumnAndRow(2, $row, $event->type_label);
-            $sheet->setCellValueByColumnAndRow(3, $row, $event->event_date->format('d.m.Y'));
-            $sheet->setCellValueByColumnAndRow(4, $row, $event->event_time ? date('H:i', strtotime($event->event_time)) : '');
-            $sheet->setCellValueByColumnAndRow(5, $row, $event->people_count);
-            $sheet->setCellValueByColumnAndRow(6, $row, $event->status_label);
-            $sheet->setCellValueByColumnAndRow(7, $row, $event->client_phone ?? '');
-            $sheet->setCellValueByColumnAndRow(8, $row, $event->client_email ?? '');
-            $sheet->setCellValueByColumnAndRow(9, $row, $event->service_price);
-            $sheet->setCellValueByColumnAndRow(10, $row, $event->menu_price);
-            $sheet->setCellValueByColumnAndRow(11, $row, $event->total_price);
-            $sheet->setCellValueByColumnAndRow(12, $row, $event->expected_profit);
+            $sheet->setCellValue('A' . $row, $event->client_name);
+            $sheet->setCellValue('B' . $row, $event->type_label);
+            $sheet->setCellValue('C' . $row, $event->event_date->format('d.m.Y'));
+            $sheet->setCellValue('D' . $row, $event->event_time ? date('H:i', strtotime($event->event_time)) : '');
+            $sheet->setCellValue('E' . $row, $event->people_count);
+            $sheet->setCellValue('F' . $row, $event->status_label);
+            $sheet->setCellValue('G' . $row, $event->client_phone ?? '');
+            $sheet->setCellValue('H' . $row, $event->client_email ?? '');
+            $sheet->setCellValue('I' . $row, $event->service_price);
+            $sheet->setCellValue('J' . $row, $event->menu_price);
+            $sheet->setCellValue('K' . $row, $event->total_price);
+            $sheet->setCellValue('L' . $row, $event->expected_profit);
             $row++;
         }
 
@@ -75,8 +76,9 @@ class ExportController extends Controller
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
+        $colsMap = range('A', 'L');
         foreach ($headers as $i => $h) {
-            $sheet->setCellValueByColumnAndRow($i + 1, 1, $h);
+            $sheet->setCellValue($colsMap[$i] . '1', $h);
         }
 
         $events = Event::with('dishes.ingredients')->orderBy('event_date', 'desc')->get();
@@ -84,18 +86,18 @@ class ExportController extends Controller
         $totals = [0, 0, 0, 0, 0];
         foreach ($events as $event) {
             $margin = $event->total_price > 0 ? ($event->expected_profit / $event->total_price) * 100 : 0;
-            $sheet->setCellValueByColumnAndRow(1, $row, $event->client_name);
-            $sheet->setCellValueByColumnAndRow(2, $row, $event->type_label);
-            $sheet->setCellValueByColumnAndRow(3, $row, $event->event_date->format('d.m.Y'));
-            $sheet->setCellValueByColumnAndRow(4, $row, $event->people_count);
-            $sheet->setCellValueByColumnAndRow(5, $row, $event->status_label);
-            $sheet->setCellValueByColumnAndRow(6, $row, $event->type_price);
-            $sheet->setCellValueByColumnAndRow(7, $row, $event->service_price);
-            $sheet->setCellValueByColumnAndRow(8, $row, $event->menu_price);
-            $sheet->setCellValueByColumnAndRow(9, $row, $event->total_price);
-            $sheet->setCellValueByColumnAndRow(10, $row, $event->ingredient_cost);
-            $sheet->setCellValueByColumnAndRow(11, $row, $event->expected_profit);
-            $sheet->setCellValueByColumnAndRow(12, $row, round($margin, 1) . '%');
+            $sheet->setCellValue('A' . $row, $event->client_name);
+            $sheet->setCellValue('B' . $row, $event->type_label);
+            $sheet->setCellValue('C' . $row, $event->event_date->format('d.m.Y'));
+            $sheet->setCellValue('D' . $row, $event->people_count);
+            $sheet->setCellValue('E' . $row, $event->status_label);
+            $sheet->setCellValue('F' . $row, $event->type_price);
+            $sheet->setCellValue('G' . $row, $event->service_price);
+            $sheet->setCellValue('H' . $row, $event->menu_price);
+            $sheet->setCellValue('I' . $row, $event->total_price);
+            $sheet->setCellValue('J' . $row, $event->ingredient_cost);
+            $sheet->setCellValue('K' . $row, $event->expected_profit);
+            $sheet->setCellValue('L' . $row, round($margin, 1) . '%');
             $totals[0] += $event->service_price;
             $totals[1] += $event->menu_price;
             $totals[2] += $event->total_price;
@@ -104,15 +106,15 @@ class ExportController extends Controller
             $row++;
         }
 
-        $sheet->setCellValueByColumnAndRow(1, $row, 'ИТОГО');
+        $sheet->setCellValue('A' . $row, 'ИТОГО');
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
-        $sheet->setCellValueByColumnAndRow(7, $row, $totals[0]);
-        $sheet->setCellValueByColumnAndRow(8, $row, $totals[1]);
-        $sheet->setCellValueByColumnAndRow(9, $row, $totals[2]);
-        $sheet->setCellValueByColumnAndRow(10, $row, $totals[3]);
-        $sheet->setCellValueByColumnAndRow(11, $row, $totals[4]);
+        $sheet->setCellValue('G' . $row, $totals[0]);
+        $sheet->setCellValue('H' . $row, $totals[1]);
+        $sheet->setCellValue('I' . $row, $totals[2]);
+        $sheet->setCellValue('J' . $row, $totals[3]);
+        $sheet->setCellValue('K' . $row, $totals[4]);
         $totalMargin = $totals[2] > 0 ? ($totals[4] / $totals[2]) * 100 : 0;
-        $sheet->setCellValueByColumnAndRow(12, $row, round($totalMargin, 1) . '%');
+        $sheet->setCellValue('L' . $row, round($totalMargin, 1) . '%');
 
         $sheet->getStyle('A1:L' . $row)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 

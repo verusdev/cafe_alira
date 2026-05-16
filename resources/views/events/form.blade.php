@@ -5,6 +5,28 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-4">{{ isset($event) ? 'Редактировать мероприятие' : 'Создать мероприятие' }}</h1>
 
+    @if(isset($previousEvents) && $previousEvents->isNotEmpty())
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700 font-medium">Клиент уже обращался ранее</p>
+                    <ul class="mt-1 text-sm text-yellow-600 list-disc list-inside">
+                        @foreach($previousEvents as $prev)
+                            <li>
+                                <a href="{{ route('events.show', $prev) }}" class="underline hover:text-yellow-800">
+                                    {{ $prev->client_name }} — {{ $prev->event_date->format('d.m.Y') }} ({{ $prev->type_label }})
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <form action="{{ isset($event) ? route('events.update', $event) : route('events.store') }}" method="POST" class="bg-white rounded-lg shadow p-6">
         @csrf
         @if(isset($event)) @method('PUT') @endif

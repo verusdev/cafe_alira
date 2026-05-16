@@ -9,6 +9,7 @@
             @if (auth()->user()->canWrite('purchases'))
                 <a href="{{ route('purchases.create', ['event_id' => $event->id]) }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Оформить закупку</a>
             @endif
+            <a href="{{ route('events.print-shopping-list', $event) }}" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" target="_blank">🖨 Печать</a>
             <a href="{{ route('events.show', $event) }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Назад</a>
         </div>
     </div>

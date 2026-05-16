@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
+    use HasFactory;
     const STATUSES = [
         'new' => 'Новый',
         'confirmed' => 'Подтверждён',
@@ -135,6 +137,32 @@ class Event extends Model
     public function canTransitionTo(string $newStatus): bool
     {
         return $newStatus === $this->status || in_array($newStatus, $this->allowedTransitions());
+    }
+
+    public function scopeByPhone($query, string $phone)
+    {
+        return $query->where('client_phone', $phone);
+    }
+
+    public function scopeByName($query, string $name)
+    {
+        return $query->where('client_name', 'like', '%' . $name . '%');
+    }
+
+    public function previousEvents(?int $excludeId = null)
+    {
+        $query = Event::query();
+        if ($this->client_phone) {
+            $query->where('client_phone', $this->client_phone);
+        } elseif ($this->client_name) {
+            $query->where('client_name', 'like', '%' . $this->client_name . '%');
+        } else {
+            return collect();
+        }
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        return $query->orderBy('event_date', 'desc')->take(5)->get();
     }
 
     public function dishes(): BelongsToMany
