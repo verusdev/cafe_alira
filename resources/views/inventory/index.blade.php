@@ -10,6 +10,30 @@
         @endif
     </div>
 
+    <form method="GET" class="bg-white rounded-lg shadow p-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Поиск по продукту</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Название ингредиента" class="w-full border rounded px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Холодильник</label>
+                <select name="refrigerator_id" class="w-full border rounded px-3 py-2 text-sm">
+                    <option value="">Все</option>
+                    @foreach($refrigerators as $ref)
+                        <option value="{{ $ref->id }}" {{ request('refrigerator_id') == $ref->id ? 'selected' : '' }}>{{ $ref->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600">Найти</button>
+                @if(request()->anyFilled(['search', 'refrigerator_id']))
+                    <a href="{{ route('inventory.index') }}" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400">Сбросить</a>
+                @endif
+            </div>
+        </div>
+    </form>
+
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="w-full">
             <thead class="bg-gray-50">
@@ -35,7 +59,7 @@
                                 <a href="{{ route('inventory.edit', $inv) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
                                 <form action="{{ route('inventory.destroy', $inv) }}" method="POST" class="inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirmModal(event, this)">🗑</button>
                                 </form>
                             @endif
                         </td>

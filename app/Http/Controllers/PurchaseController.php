@@ -13,11 +13,23 @@ use Illuminate\View\View;
 
 class PurchaseController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $purchases = Purchase::with('event', 'items.ingredient')
-            ->orderBy('purchase_date', 'desc')
-            ->paginate(15);
+        $query = Purchase::with('event', 'items.ingredient');
+
+        if ($search = $request->input('search')) {
+            $query->whereHas('event', function ($q) use ($search) {
+                $q->where('client_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $purchases = $query->orderBy('purchase_date', 'desc')
+            ->paginate(15)
+            ->withQueryString();
         return view('purchases.index', compact('purchases'));
     }
 

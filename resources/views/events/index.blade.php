@@ -95,7 +95,7 @@
                                 <a href="{{ route('events.edit', $event) }}" class="text-yellow-500 hover:text-yellow-700 mr-2">✏️</a>
                                 <form action="{{ route('events.destroy', $event) }}" method="POST" class="inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirmModal(event, this)">🗑</button>
                                 </form>
                             @endif
                             <a href="{{ route('events.shopping-list', $event) }}" class="text-green-500 hover:text-green-700 mr-2">🛒</a>

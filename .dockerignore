@@ -1,0 +1,11 @@
+/.env
+/node_modules
+/vendor
+.git
+.gitignore
+.DS_Store
+storage/framework/cache/data/*
+storage/logs/*
+!storage/app/public
+public/build/hot
+public/hot

@@ -110,4 +110,98 @@
             </div>
         </div>
     @endif
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Выручка по месяцам</h2>
+            <canvas id="revenueChart" height="200"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Типы мероприятий</h2>
+            <canvas id="typeChart" height="200"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Статусы мероприятий</h2>
+            <canvas id="statusChart" height="200"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Количество мероприятий по месяцам</h2>
+            <canvas id="countChart" height="200"></canvas>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    @vite('resources/js/app.js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const blue = 'rgba(59, 130, 246, 0.7)';
+            const green = 'rgba(16, 185, 129, 0.7)';
+            const orange = 'rgba(249, 115, 22, 0.7)';
+            const purple = 'rgba(139, 92, 246, 0.7)';
+            const colors = [blue, green, orange, purple, 'rgba(236, 72, 153, 0.7)', 'rgba(107, 114, 128, 0.7)'];
+
+            const monthlyData = @json($monthlyRevenue);
+            const labels = monthlyData.map(function (r) {
+                const parts = r.month.split('-');
+                const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+                return months[parseInt(parts[1]) - 1] + ' ' + parts[0];
+            });
+
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Выручка, ₽',
+                        data: monthlyData.map(function (r) { return r.revenue; }),
+                        backgroundColor: blue
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            new Chart(document.getElementById('countChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Мероприятий',
+                        data: monthlyData.map(function (r) { return r.count; }),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            const typeData = @json($typeStats);
+            new Chart(document.getElementById('typeChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: typeData.map(function (r) { return r.label; }),
+                    datasets: [{
+                        data: typeData.map(function (r) { return r.count; }),
+                        backgroundColor: colors
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            const statusData = @json($statusStats);
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: statusData.map(function (r) { return r.label; }),
+                    datasets: [{
+                        data: statusData.map(function (r) { return r.count; }),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6b7280', '#ef4444']
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        });
+    </script>
 @endsection

@@ -14,6 +14,7 @@ class Dish extends Model
         'category',
         'price_per_person',
         'is_active',
+        'image',
     ];
 
     protected function casts(): array
@@ -22,6 +23,16 @@ class Dish extends Model
             'is_active' => 'boolean',
             'price_per_person' => 'decimal:2',
         ];
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        return $this->image ? asset('storage/' . $this->image) : '';
+    }
+
+    public function hasImage(): bool
+    {
+        return !empty($this->image);
     }
 
     public function ingredients(): BelongsToMany

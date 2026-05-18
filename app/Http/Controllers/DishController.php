@@ -6,13 +6,27 @@ use App\Models\Dish;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class DishController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $dishes = Dish::with('ingredients')->paginate(15);
+        $query = Dish::with('ingredients');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('is_active') && $request->input('is_active') !== '') {
+            $query->where('is_active', $request->boolean('is_active'));
+        }
+
+        $dishes = $query->paginate(15)->withQueryString();
         return view('dishes.index', compact('dishes'));
     }
 
@@ -32,18 +46,25 @@ class DishController extends Controller
             'category' => 'nullable|string|max:255',
             'price_per_person' => 'required|numeric|min:0',
             'is_active' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'ingredients' => 'nullable|array',
             'ingredients.*.id' => 'exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|min:0',
         ]);
 
-        $dish = Dish::create([
+        $data = [
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'category' => $validated['category'] ?? null,
             'price_per_person' => $validated['price_per_person'],
             'is_active' => $request->boolean('is_active', true),
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('dishes', 'public');
+        }
+
+        $dish = Dish::create($data);
 
         if (!empty($validated['ingredients'])) {
             $pivotData = [];
@@ -79,18 +100,28 @@ class DishController extends Controller
             'category' => 'nullable|string|max:255',
             'price_per_person' => 'required|numeric|min:0',
             'is_active' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'ingredients' => 'nullable|array',
             'ingredients.*.id' => 'exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|min:0',
         ]);
 
-        $dish->update([
+        $data = [
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'category' => $validated['category'] ?? null,
             'price_per_person' => $validated['price_per_person'],
             'is_active' => $request->boolean('is_active', true),
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            if ($dish->image) {
+                Storage::disk('public')->delete($dish->image);
+            }
+            $data['image'] = $request->file('image')->store('dishes', 'public');
+        }
+
+        $dish->update($data);
 
         if ($request->has('ingredients')) {
             $pivotData = [];
@@ -108,6 +139,9 @@ class DishController extends Controller
     public function destroy(Dish $dish): RedirectResponse
     {
         abort_unless(auth()->user()->canWrite('dishes'), 403);
+        if ($dish->image) {
+            Storage::disk('public')->delete($dish->image);
+        }
         $dish->delete();
         return redirect()->route('dishes.index')->with('success', 'Блюдо удалено');
     }

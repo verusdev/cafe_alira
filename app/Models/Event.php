@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Event extends Model
 {
     use HasFactory;
+
     const STATUSES = [
         'new' => 'Новый',
         'confirmed' => 'Подтверждён',
@@ -34,6 +35,20 @@ class Event extends Model
         'corporate' => ['label' => 'Корпоратив', 'price_per_person' => 2000],
         'other' => ['label' => 'Другое', 'price_per_person' => 1000],
     ];
+
+    protected static function booted(): void
+    {
+        static::updating(function (Event $event) {
+            if ($event->isDirty('status') && auth()->check()) {
+                $event->auditLogs()->create([
+                    'user_id' => auth()->id(),
+                    'field' => 'status',
+                    'old_value' => $event->getOriginal('status'),
+                    'new_value' => $event->status,
+                ]);
+            }
+        });
+    }
 
     protected $fillable = [
         'client_name',
@@ -64,6 +79,11 @@ class Event extends Model
     public static function typeLabel(string $type): string
     {
         return self::TYPES[$type]['label'] ?? $type;
+    }
+
+    public static function statusLabel(string $status): string
+    {
+        return self::STATUSES[$status] ?? $status;
     }
 
     public function getTypeLabelAttribute(): string
@@ -175,5 +195,10 @@ class Event extends Model
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class);
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class)->latest();
     }
 }

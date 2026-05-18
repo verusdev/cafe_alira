@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('export/events', [ExportController::class, 'events'])->name('export.events');
     Route::get('export/finance', [ExportController::class, 'finance'])->name('export.finance');
     Route::get('calendar-data', [EventController::class, 'calendarData'])->name('events.calendar-data');
+    Route::patch('events/{event}/move', [EventController::class, 'moveEvent'])->name('events.move');
 
     Route::resource('dishes', DishController::class);
     Route::resource('ingredients', IngredientController::class);

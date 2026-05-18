@@ -10,6 +10,29 @@
         @endif
     </div>
 
+    <form method="GET" class="bg-white rounded-lg shadow p-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Поиск</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Имя клиента" class="w-full border rounded px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500 mb-1">Статус</label>
+                <select name="status" class="w-full border rounded px-3 py-2 text-sm">
+                    <option value="">Все</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>В ожидании</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Завершена</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600">Найти</button>
+                @if(request()->anyFilled(['search', 'status']))
+                    <a href="{{ route('purchases.index') }}" class="ml-2 bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-400">Сбросить</a>
+                @endif
+            </div>
+        </div>
+    </form>
+
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="w-full">
             <thead class="bg-gray-50">
@@ -40,7 +63,7 @@
                                 </form>
                                 <form action="{{ route('purchases.destroy', $purchase) }}" method="POST" class="inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Удалить?')">🗑</button>
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirmModal(event, this)">🗑</button>
                                 </form>
                             @endif
                         </td>

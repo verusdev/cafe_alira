@@ -8,9 +8,47 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: '/api/login',
+        summary: 'Авторизация',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@cafe.ru'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Успешный вход',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'token', type: 'string'),
+                        new OA\Property(
+                            property: 'user',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'name', type: 'string'),
+                                new OA\Property(property: 'email', type: 'string'),
+                                new OA\Property(property: 'role', type: 'string'),
+                                new OA\Property(property: 'role_label', type: 'string'),
+                            ],
+                            type: 'object'
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(response: 422, description: 'Неверный email или пароль'),
+        ]
+    )]
     public function login(Request $request): JsonResponse
     {
         $request->validate([
@@ -40,6 +78,16 @@ class AuthController extends Controller
         ]);
     }
 
+    #[OA\Post(
+        path: '/api/logout',
+        summary: 'Выход',
+        tags: ['Auth'],
+        security: [['Bearer' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'Выход выполнен'),
+            new OA\Response(response: 401, description: 'Не авторизован'),
+        ]
+    )]
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
@@ -47,6 +95,34 @@ class AuthController extends Controller
         return response()->json(['message' => 'Выход выполнен']);
     }
 
+    #[OA\Get(
+        path: '/api/user',
+        summary: 'Информация о текущем пользователе',
+        tags: ['Auth'],
+        security: [['Bearer' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Данные пользователя',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'user',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'name', type: 'string'),
+                                new OA\Property(property: 'email', type: 'string'),
+                                new OA\Property(property: 'role', type: 'string'),
+                                new OA\Property(property: 'role_label', type: 'string'),
+                            ],
+                            type: 'object'
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Не авторизован'),
+        ]
+    )]
     public function user(Request $request): JsonResponse
     {
         return response()->json([

@@ -5,7 +5,7 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-4">{{ isset($dish) ? 'Редактировать блюдо' : 'Создать блюдо' }}</h1>
 
-    <form action="{{ isset($dish) ? route('dishes.update', $dish) : route('dishes.store') }}" method="POST" class="bg-white rounded-lg shadow p-6">
+    <form action="{{ isset($dish) ? route('dishes.update', $dish) : route('dishes.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
         @csrf
         @if(isset($dish)) @method('PUT') @endif
 
@@ -27,6 +27,15 @@
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', $dish->is_active ?? true) ? 'checked' : '' }} class="mr-2">
                     <span class="text-sm font-medium">Активно</span>
                 </label>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Фото</label>
+                <input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full border rounded px-3 py-2">
+                @if(isset($dish) && $dish->hasImage())
+                    <div class="mt-2">
+                        <img src="{{ $dish->image_url }}" alt="{{ $dish->name }}" class="w-32 h-32 object-cover rounded border">
+                    </div>
+                @endif
             </div>
         </div>
 

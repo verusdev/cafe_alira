@@ -50,12 +50,23 @@
 
     <main class="max-w-7xl mx-auto py-6 px-4">
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <div id="flash-success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                 {{ session('success') }}
             </div>
+            <script>setTimeout(() => { const el = document.getElementById('flash-success'); if (el) el.remove(); }, 3000);</script>
         @endif
         @yield('content')
     </main>
     @yield('scripts')
+    <x-confirm-modal />
+    <script>
+        document.addEventListener('submit', function (e) {
+            const btn = e.target.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = btn.dataset.loading || 'Отправка...';
+            }
+        });
+    </script>
 </body>
 </html>

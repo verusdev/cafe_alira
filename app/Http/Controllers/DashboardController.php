@@ -6,6 +6,7 @@ use App\Models\Dish;
 use App\Models\Event;
 use App\Models\Ingredient;
 use App\Models\Purchase;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -40,6 +41,43 @@ class DashboardController extends Controller
             'profit_margin' => $profitMargin,
         ];
 
-        return view('dashboard', compact('stats'));
+        $monthlyRevenue = Event::select(
+            DB::raw("strftime('%Y-%m', event_date) as month"),
+            DB::raw('SUM(people_count * CASE event_type ' . $this->typePriceCase() . ' END) as revenue'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->where('event_date', '>=', now()->subMonths(11)->startOfMonth())
+            ->where('status', '!=', 'cancelled')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        $typeLabels = [
+            'banquet' => 'Банкет', 'wedding' => 'Свадьба', 'corporate' => 'Корпоратив',
+            'buffet' => 'Фуршет', 'coffee_break' => 'Кофе-брейк', 'other' => 'Другое',
+        ];
+
+        $typeStats = Event::select('event_type', DB::raw('COUNT(*) as count'))
+            ->where('status', '!=', 'cancelled')
+            ->groupBy('event_type')
+            ->orderByDesc('count')
+            ->get()
+            ->map(fn($e) => ['label' => $typeLabels[$e->event_type] ?? $e->event_type, 'count' => $e->count]);
+
+        $statusStats = collect(Event::STATUSES)->map(fn($label, $key) => [
+            'label' => $label,
+            'count' => Event::where('status', $key)->count(),
+        ])->values();
+
+        return view('dashboard', compact('stats', 'monthlyRevenue', 'typeStats', 'statusStats'));
+    }
+
+    private function typePriceCase(): string
+    {
+        $cases = [];
+        foreach (Event::TYPES as $key => $type) {
+            $cases[] = "WHEN '$key' THEN {$type['price_per_person']}";
+        }
+        return implode(' ', $cases);
     }
 }

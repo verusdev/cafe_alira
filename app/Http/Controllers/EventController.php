@@ -119,7 +119,8 @@ class EventController extends Controller
             'expected_profit' => $event->expected_profit,
         ];
         $previousEvents = $event->previousEvents($event->id);
-        return view('events.show', compact('event', 'requirements', 'finance', 'previousEvents'));
+        $auditLogs = $event->auditLogs()->with('user')->get();
+        return view('events.show', compact('event', 'requirements', 'finance', 'previousEvents', 'auditLogs'));
     }
 
     public function edit(Event $event): View
@@ -245,5 +246,16 @@ class EventController extends Controller
     {
         $event->load('dishes');
         return view('events.print-menu', compact('event'));
+    }
+
+    public function moveEvent(Request $request, Event $event): JsonResponse
+    {
+        $validated = $request->validate([
+            'event_date' => 'required|date',
+        ]);
+
+        $event->update(['event_date' => $validated['event_date']]);
+
+        return response()->json(['message' => 'Дата перенесена']);
     }
 }

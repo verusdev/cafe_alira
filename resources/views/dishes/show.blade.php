@@ -14,6 +14,11 @@
     </div>
 
     <div class="bg-white rounded-lg shadow p-6 mb-4">
+        @if($dish->hasImage())
+            <div class="mb-4">
+                <img src="{{ $dish->image_url }}" alt="{{ $dish->name }}" class="w-64 h-64 object-cover rounded-lg shadow">
+            </div>
+        @endif
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <p class="text-gray-500">Категория</p>

@@ -11,12 +11,26 @@ use Illuminate\View\View;
 
 class InventoryController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $inventories = Inventory::with(['refrigerator', 'ingredient'])
-            ->orderBy('expiration_date')
-            ->paginate(15);
-        return view('inventory.index', compact('inventories'));
+        $query = Inventory::with(['refrigerator', 'ingredient']);
+
+        if ($search = $request->input('search')) {
+            $query->whereHas('ingredient', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($refrigeratorId = $request->input('refrigerator_id')) {
+            $query->where('refrigerator_id', $refrigeratorId);
+        }
+
+        $inventories = $query->orderBy('expiration_date')
+            ->paginate(15)
+            ->withQueryString();
+
+        $refrigerators = Refrigerator::all();
+        return view('inventory.index', compact('inventories', 'refrigerators'));
     }
 
     public function create(): View

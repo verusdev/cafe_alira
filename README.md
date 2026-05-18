@@ -140,7 +140,28 @@ composer setup
 php artisan db:seed --class=DemoDataSeeder
 ```
 
-## Запуск
+## Запуск через Docker
+
+```bash
+docker compose up -d
+```
+
+Приложение будет доступно на http://localhost.
+
+Команда выполнит:
+1. Сборку PHP 8.3 FPM образа с расширениями (sqlite, gd, mbstring и др.)
+2. Установку Composer-зависимостей
+3. Генерацию ключа приложения
+4. Создание и миграцию SQLite базы данных
+5. Установку npm-зависимостей и сборку Vite
+6. Запуск Nginx на порту 80
+
+Остановка:
+```bash
+docker compose down
+```
+
+## Запуск без Docker
 
 ```bash
 composer dev

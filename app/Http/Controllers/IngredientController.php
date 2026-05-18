@@ -9,9 +9,18 @@ use Illuminate\View\View;
 
 class IngredientController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $ingredients = Ingredient::paginate(15);
+        $query = Ingredient::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        $ingredients = $query->paginate(15)->withQueryString();
         return view('ingredients.index', compact('ingredients'));
     }
 

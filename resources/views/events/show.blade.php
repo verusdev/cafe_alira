@@ -140,6 +140,24 @@
         </div>
     @endif
 
+    @if($auditLogs->isNotEmpty())
+        <div class="bg-white rounded-lg shadow p-6 mb-4">
+            <h2 class="text-xl font-bold mb-4">История изменений</h2>
+            <div class="space-y-2">
+                @foreach($auditLogs as $log)
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="text-gray-400 w-24 flex-shrink-0">{{ $log->created_at->format('d.m.Y H:i') }}</span>
+                        <span class="font-medium text-gray-700">{{ $log->user->name }}</span>
+                        <span class="text-gray-500">изменил статус с</span>
+                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ \App\Models\Event::statusLabel($log->old_value) }}</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ \App\Models\Event::statusLabel($log->new_value) }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="bg-white rounded-lg shadow p-6">
         @if($requirements->count())
             <table class="w-full">
